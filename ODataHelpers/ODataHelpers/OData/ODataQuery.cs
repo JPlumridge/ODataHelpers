@@ -24,9 +24,18 @@ namespace OnlineAssessmentForm.OData
         public string ToODataUrl()
         {
             //If this is a "by key" query, then this classes Assert should prevent anything but Key from being set
-            if (Key != null)
-                return $"{EntityName}({Key})";
+            var url = Key == null ? BuildParameterQuery() : BuildGetByKeyQuery();
+            ClearQuery();
+            return url;
+        }
 
+        private string BuildGetByKeyQuery()
+        {
+            return $"{EntityName}({Key})";
+        }
+
+        private string BuildParameterQuery()
+        {
             var builder = new StringBuilder(EntityName);
 
             var first = QueryParts.First();
@@ -38,6 +47,12 @@ namespace OnlineAssessmentForm.OData
             }
 
             return builder.ToString();
+        }
+
+        private void ClearQuery()
+        {
+            this.QueryParts.Clear();
+            this.Key = null;
         }
 
         public void GetByKey(object key)
